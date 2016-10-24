@@ -3,7 +3,8 @@ Call regions of homozygosity and make tentative UPD calls
 
 ## Usage ##
 
-```Usage: rhocall [OPTIONS] VCF
+```
+Usage: rhocall [OPTIONS] VCF
 
   Call runs of autozygosity.
 
@@ -28,6 +29,8 @@ Options:
 
 ## Installation ##
 
-```pip install -e .```
+```
+pip install -e .
+```
 
 
