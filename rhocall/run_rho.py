@@ -6,8 +6,7 @@ from .utils import (skip_variant, check_homozygote, check_heterozygote,
 
 logger = logging.getLogger(__name__)
 
-
-def run_rhocall(proband_vcf, block_constant, max_hets, max_het_fraction, 
+def run_rhocall(ctx,proband_vcf, block_constant, max_hets, max_het_fraction, 
                  minimum_homs, shortest_block, flag_UPD_at_fraction, individual):
     """docstring for run_rho_call"""
     block_constant = 1000000

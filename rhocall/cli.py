@@ -5,10 +5,16 @@ from cyvcf2 import VCF
 
 from rhocall.log import configure_stream, LEVELS
 from .run_rho import run_rhocall
+from .run_annotate import run_annotate
+from .run_tally import run_tally
 
 from .prints import (output_bed_header)
 
 logger = logging.getLogger(__name__)
+
+@click.group()
+def cli():
+    pass
 
 @click.command()
 @click.argument('vcf', type=click.Path(exists=True))
@@ -45,7 +51,7 @@ logger = logging.getLogger(__name__)
     default=2
 )
 @click.pass_context
-def cli(ctx, vcf, max_hets, max_het_fraction, minimum_homs, shortest_block, 
+def call(ctx,vcf, max_hets, max_het_fraction, minimum_homs, shortest_block, 
         flag_upd_at_fraction, individual, block_constant, verbose):
     """Call runs of autozygosity."""
     loglevel = LEVELS.get(min(verbose, 3))
@@ -74,3 +80,76 @@ def cli(ctx, vcf, max_hets, max_het_fraction, minimum_homs, shortest_block,
         flag_UPD_at_fraction=flag_upd_at_fraction, 
         individual=individual
     )
+
+
+@click.command()
+@click.argument('roh', type=click.File('r'))
+@click.option('--quality_threshold', '-q', 
+    default=10.0,
+    help='Minimum quality that counts towards region totals.'
+)
+@click.option('--flag_upd_at_fraction', '-u',    
+    default=0.4,
+    help='Flag UPD if this fraction of chr quality positions called AZ.'
+)
+@click.option('-v', '--verbose',
+    count=True,
+    default=2
+)
+@click.option('--output','-o', type=click.File('w'), default='-')
+def tally(roh, quality_threshold, flag_upd_at_fraction, output, verbose):
+    """Tally runs of autozygosity from rhofile.
+    Accepts a bcftools roh style TSV-file with CHR,POS,AZ,QUAL."""
+    loglevel = LEVELS.get(min(verbose, 3))
+    configure_stream(level=loglevel)
+
+    run_tally(
+        roh=roh,
+        quality_threshold=quality_threshold,
+        flag_upd_at_fraction=flag_upd_at_fraction,
+        output=output
+    )
+
+
+@click.command()
+@click.argument('vcf', type=click.Path(exists=True))
+@click.option('roh', '-r', type=click.File('r'),
+              help='Bcftools roh style TSV file with CHR,POS,AZ,QUAL.')
+@click.option('--quality_threshold', '-q', 
+    default=10.0,
+    help='Minimum quality calls that are imported in region totals.'
+)
+@click.option('--flag_upd_at_fraction', '-u',
+    default=0.4,
+    help='Flag UPD if this fraction of chr quality positions called AZ.'
+)
+@click.option('-v', '--verbose',
+    count=True,
+    default=2
+)
+@click.option('--output','-o',type=click.File('w'), default='-')
+def annotate(vcf, roh, quality_threshold, flag_upd_at_fraction,output,verbose):
+    """Markup VCF file using rho-calls. VCF files annotated with GENMOD style
+    inheritance patterns are accepted."""
+    loglevel = LEVELS.get(min(verbose, 3))
+    configure_stream(level=loglevel)
+
+    proband_vcf = VCF(vcf)
+    
+    # add this command to VCF header
+    # add additional tag to VCF header INFO
+
+    #output_vcfheader(output)
+
+    run_annotate(
+        proband_vcf=proband_vcf,
+        roh=roh,        
+        quality_threshold=quality_threshold,
+        flag_upd_at_fraction=flag_upd_at_fraction,
+        output=output
+    )
+
+
+cli.add_command(call)
+cli.add_command(tally)
+cli.add_command(annotate)
