@@ -155,7 +155,7 @@ def aggregate(roh, quality_threshold, output, verbose):
     default=2
 )
 @click.option('--output','-o',type=click.File('w'), default='-')
-def annotate(vcf, roh, quality_threshold, flag_upd_at_fraction,output,verbose):
+def annotate(vcf, roh, bed, quality_threshold, flag_upd_at_fraction,output,verbose):
     """Markup VCF file using rho-calls. Use BED file to mark all variants in AZ 
     windows. Use a bcftools style roh TSV to mark only selected AZ variants."""
     loglevel = LEVELS.get(min(verbose, 3))

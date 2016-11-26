@@ -5,12 +5,12 @@ logger = logging.getLogger(__name__)
 def run_annotate(proband_vcf, bed, quality_threshold, flag_upd_at_fraction, output):
     """Markup VCF file using rho-call BED file."""
 
-    az_info_header={'ID' : 'AZ', 'Number' : 1, 'Type' : 'Boolean', 
+    az_info_header={'ID' : 'AZ', 'Number' : 1, 'Type' : 'Flag', 
                     'Source' : 'rhocall', 'Version' : '0.1',
                     'Description' : "Autozygous positon call"}
     proband_vcf.add_info_to_header(az_info_header);
 
-    hw_info_header={'ID' : 'HW', 'Number' : 1, 'Type' : 'Boolean', 
+    hw_info_header={'ID' : 'HW', 'Number' : 1, 'Type' : 'Flag', 
                     'Source' : 'rhocall', 'Version' : '0.1',
                     'Description' : "Hardy-Weinberg equilibrium (non-autozyous) positon call"}
     proband_vcf.add_info_to_header(hw_info_header);
@@ -49,7 +49,7 @@ def run_annotate(proband_vcf, bed, quality_threshold, flag_upd_at_fraction, outp
                 var.INFO['AZQUAL']=str(qual)                
                 output.write(str(var))
                 var = next(proband_vcf)
-            elif var.CHROM == chr and var.start < pos:
+            elif var.CHROM == chr and var.start < start:
                 # before next win (and not in win) - write and pull new var
                 output.write(str(var))
                 var = next(proband_vcf)
