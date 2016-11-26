@@ -31,9 +31,22 @@ Options:
   --help  Show this message and exit.
 
 Commands:
+  aggregate  Aggregate runs of autozygosity from rhofile...
   annotate  Markup VCF file using rho-calls.
   call      Call runs of autozygosity.
   tally     Tally runs of autozygosity from rhofile.
+
+Usage: rhocall aggregate [OPTIONS] ROH
+
+  Aggregate runs of autozygosity from rhofile into windowed rho BED file.
+  Accepts a bcftools roh style TSV-file with CHR,POS,AZ,QUAL.
+
+Options:
+  -q, --quality_threshold FLOAT  Minimum quality trusted to start or end ROH-
+                                 windows.
+  -v, --verbose
+  -o, --output FILENAME
+  --help                         Show this message and exit.
 
 Usage: rhocall call [OPTIONS] VCF
 
@@ -95,8 +108,8 @@ Options:
 ```
 bcftools query -f'%CHROM\t%POS\t%REF,%ALT\t%INFO/AF\n' anon-SweGen_STR_NSPHS_1000samples_snp_freq_hg19.vcf.gz | bgzip -c > anon_SweGen_161019_snp_freq_hg19.tab.gz
 bcftools roh --AF-file anon_SweGen_161019_snp_freq_hg19.tab.gz -I 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.bcf > 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh
-rhocall tally 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh
-rhocall annotate -r 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.bcf
+rhocall tally 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh -o 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh.tally.csv
+rhocall annotate -r 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.bcf -o 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh.vcf
 ```
 
 ## Installation ##
