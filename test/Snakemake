@@ -1,0 +1,44 @@
+rule frequency_file:
+     input:
+         "anon-SweGen_STR_NSPHS_1000samples_snp_freq_hg19.vcf.gz"
+     output:
+	 "anon_SweGen_161019_snp_freq_hg19.tab.gz"
+     shell:
+	 "bcftools query -f'%CHROM\t%POS\t%REF,%ALT\t%INFO/AF\n' {input} | bgzip -c > {output}"
+
+rule roh_file_by_bcftools:
+     input:
+	bcf="{sample}.bcf",
+	freq="anon_SweGen_161019_snp_freq_hg19.tab.gz"
+     output:
+        "{sample}.roh"
+     shell:
+	"bcftools roh --AF-file {input.freq} -I {input.bcf} > {output}"
+
+#
+# Tally the apparently AZ and HW variants on each chromosome to detect gross AZ.
+#
+rule tally:
+    input:
+	"{sample}.roh"
+    output:
+	"{sample}.roh.tally.tsv"
+    shell:
+	"rhocall tally {input} -o {output}"
+
+rule aggregate:
+     input:
+	"{sample}.roh"
+     output:
+	"{sample}.roh.bed"
+     shell:
+	"rhocall aggregate {input} -o {output}"
+
+rule annotate:
+    input:
+	bed="{sample}.roh.bed",
+	bcf="{sample}.bcf"
+    output:
+	"{sample}.roh.vcf"
+    shell:
+	"rhocall annotate -b {input.bed} -o {output} {input.bcf}"
