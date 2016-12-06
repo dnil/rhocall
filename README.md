@@ -14,7 +14,9 @@ Commands:
   annotate  Markup VCF file using rho-calls.
   call      Call runs of autozygosity.
   tally     Tally runs of autozygosity from rhofile.
-
+```
+### rhocall aggregate ####
+```
 Usage: rhocall aggregate [OPTIONS] ROH
 
   Aggregate runs of autozygosity from rhofile into windowed rho BED file.
@@ -26,7 +28,9 @@ Options:
   -v, --verbose
   -o, --output FILENAME
   --help                         Show this message and exit.
-
+```
+### rhocall call ###
+```
 Usage: rhocall call [OPTIONS] VCF
 
   Call runs of autozygosity.
@@ -47,7 +51,10 @@ Options:
                                   or genome)
   -v, --verbose
   --help                          Show this message and exit.
+```
 
+### rhocall tally ###
+```
 Usage: rhocall tally [OPTIONS] ROH
 
   Tally runs of autozygosity from rhofile. Accepts a bcftools roh style TSV-
@@ -62,7 +69,10 @@ Options:
   -v, --verbose
   -o, --output FILENAME
   --help                          Show this message and exit.
+```
 
+### rhocall annotate ###
+```
 Usage: rhocall annotate [OPTIONS] VCF
 
   Markup VCF file using rho-calls. Use BED file to mark all variants in AZ
@@ -83,42 +93,39 @@ Options:
 
 ```
 
-## Suggested workflow ##
+## Examples ##
 
-### Preparation ###
+### Suggested workflow ###
+
+#### Preparation ####
 ```
 bcftools query -f'%CHROM\t%POS\t%REF,%ALT\t%INFO/AF\n' popfreq.vcf.gz | bgzip -c > popfreq.tab.gz
 ```
 
-### Call ROH with bcftools ###
+#### Call ROH with bcftools ####
 ```
 bcftools roh --AF-file popfreq.tab.gz -I sample.bcf > sample.roh
 ```
 
-### Aggregate ROH calls into windows, and mark up variant file (VCF/BCF) ###
+#### Aggregate ROH calls into windows, and mark up variant file (VCF/BCF) ####
 ```
 rhocall aggregate sample.roh -o sample.roh.bed
 rhocall annotate -b sample.roh.bed -o sample.rho.vcf sample.bcf
 ```
 
-### Obtain per chromosome overview ###
+#### Obtain per chromosome overview ####
 ```
 rhocall tally sample.roh -o sample.roh.tally.tsv
 ```
 
-## Additional usage examples ##
+### Additional usage examples ###
 
 ```
 bcftools query -f'%CHROM\t%POS\t%REF,%ALT\t%INFO/AF\n' anon-SweGen_STR_NSPHS_1000samples_snp_freq_hg19.vcf.gz | bgzip -c > anon_SweGen_161019_snp_freq_hg19.tab.gz
-
 bcftools roh --AF-file anon_SweGen_161019_snp_freq_hg19.tab.gz -I 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.bcf > 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh
-
 rhocall tally 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh -o 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh.tally.tsv
-
 rhocall annotate -r 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.bcf -o 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh.vcf
-
 rhocall aggregate 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh -o 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh.bed
-
 rhocall annotate -b 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh.bed -o 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.rho.vcf 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.bcf
 ```
 
