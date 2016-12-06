@@ -4,5 +4,6 @@
 #
 
 numpy
+Cython
 cyvcf2==0.6.2
 click
