@@ -83,14 +83,37 @@ Options:
 
 ```
 
-## Example ##
+## Suggested workflow ##
+
+### Preparation ###
+```
+bcftools query -f'%CHROM\t%POS\t%REF,%ALT\t%INFO/AF\n' popfreq.vcf.gz | bgzip -c > popfreq.tab.gz
+```
+
+### Call ROH with bcftools ###
+```
+bcftools roh --AF-file popfreq.tab.gz -I sample.bcf > sample.roh
+```
+
+### Aggregate ROH calls into windows, and mark up variant file (VCF/BCF) ###
+```
+rhocall aggregate sample.roh -o sample.roh.bed
+rhocall annotate -b sample.roh.bed -o sample.rho.vcf sample.bcf
+```
+
+### Obtain per chromosome overview ###
+```
+rhocall tally sample.roh -o sample.roh.tally.tsv
+```
+
+## Additional usage examples ##
 
 ```
 bcftools query -f'%CHROM\t%POS\t%REF,%ALT\t%INFO/AF\n' anon-SweGen_STR_NSPHS_1000samples_snp_freq_hg19.vcf.gz | bgzip -c > anon_SweGen_161019_snp_freq_hg19.tab.gz
 
 bcftools roh --AF-file anon_SweGen_161019_snp_freq_hg19.tab.gz -I 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.bcf > 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh
 
-rhocall tally 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh -o 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh.tally.csv
+rhocall tally 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh -o 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh.tally.tsv
 
 rhocall annotate -r 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.bcf -o 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh.vcf
 
@@ -100,9 +123,16 @@ rhocall annotate -b 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh.
 ```
 
 ## Installation ##
+Dependency lock on cyvcf2 == 0.6.2 currently, awaiting cyvcf2 install process fixes. 
+In practice this means that a chained pip install on a naive system may fail. Installation of each requirement separately should always work though.
 
 ```
+pip install numpy; pip install Cython
+pip install -r requirements.txt
 pip install -e .
 ```
 
+## Known issues ##
+
+- Dependency on CyVcf2. 
 
