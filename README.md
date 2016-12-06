@@ -15,20 +15,6 @@ Commands:
   call      Call runs of autozygosity.
   tally     Tally runs of autozygosity from rhofile.
 ```
-### rhocall aggregate ####
-```
-Usage: rhocall aggregate [OPTIONS] ROH
-
-  Aggregate runs of autozygosity from rhofile into windowed rho BED file.
-  Accepts a bcftools roh style TSV-file with CHR,POS,AZ,QUAL.
-
-Options:
-  -q, --quality_threshold FLOAT  Minimum quality trusted to start or end ROH-
-                                 windows.
-  -v, --verbose
-  -o, --output FILENAME
-  --help                         Show this message and exit.
-```
 ### rhocall call ###
 ```
 Usage: rhocall call [OPTIONS] VCF
@@ -51,6 +37,21 @@ Options:
                                   or genome)
   -v, --verbose
   --help                          Show this message and exit.
+```
+
+### rhocall aggregate ####
+```
+Usage: rhocall aggregate [OPTIONS] ROH
+
+  Aggregate runs of autozygosity from rhofile into windowed rho BED file.
+  Accepts a bcftools roh style TSV-file with CHR,POS,AZ,QUAL.
+
+Options:
+  -q, --quality_threshold FLOAT  Minimum quality trusted to start or end ROH-
+                                 windows.
+  -v, --verbose
+  -o, --output FILENAME
+  --help                         Show this message and exit.
 ```
 
 ### rhocall tally ###
