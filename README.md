@@ -103,6 +103,9 @@ bcftools query -f'%CHROM\t%POS\t%REF,%ALT\t%INFO/AF\n' popfreq.vcf.gz | bgzip -c
 ```
 
 #### Call ROH with bcftools ####
+Please see the [samtools project](https://samtools.github.io/bcftools/) for installation instructions, and 
+please refer to [Narasimhan et al, 2016](http://bioinformatics.oxfordjournals.org/content/early/2016/01/30/bioinformatics.btw044) regarding method details.
+
 ```
 bcftools roh --AF-file popfreq.tab.gz -I sample.bcf > sample.roh
 ```
