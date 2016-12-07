@@ -6,6 +6,7 @@ from cyvcf2 import VCF
 from rhocall.log import configure_stream, LEVELS
 from .run_rho import run_rhocall
 from .run_annotate import run_annotate
+from .run_annotate_var import run_annotate_var
 from .run_tally import run_tally
 from .run_aggregate import run_aggregate
 
