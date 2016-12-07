@@ -134,16 +134,12 @@ rhocall annotate -b 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh.
 ```
 
 ## Installation ##
-Dependency lock on cyvcf2 == 0.6.2 currently, awaiting cyvcf2 install process fixes. 
-In practice this means that a chained pip install on a naive system may fail. Installation of each requirement separately should always work though.
-
+The cyvcf2 install process appears to be jinxed on certain systems/setups. 
+In practice this means that a chained pip install on a naive system may fail. Installation of each requirement for cyvcf2 prior to installing it appears to work unconditionally.
 ```
 pip install numpy; pip install Cython
 pip install -r requirements.txt
 pip install -e .
 ```
 
-## Known issues ##
-
-- Dependency on CyVcf2. 
 
