@@ -44,7 +44,7 @@ def run_annotate(proband_vcf, bed, quality_threshold, flag_upd_at_fraction, outp
             continue
 
         col = r.rstrip().split('\t')
-        chr = str(col[0])
+        chrom = str(col[0])
         start = int(col[1])
         end = int(col[2])
         az = int(col[3])
@@ -53,11 +53,11 @@ def run_annotate(proband_vcf, bed, quality_threshold, flag_upd_at_fraction, outp
         aztype = 'ND'
         azlength = end - start + 1
 
-#        print("looking for chr %s %d" % (chr, pos))
+#        print("looking for chrom %s %d" % (chrom, pos))
         passed_win = False
         while not passed_win:
-#            print("testing var chr %s %d" % (var.CHROM, var.start))
-            if var.CHROM == chr and var.end >= start and var.end <= end:
+#            print("testing var chrom %s %d" % (var.CHROM, var.start))
+            if var.CHROM == chrom and var.end >= start and var.end <= end:
 
                 if az == 1:
                     var.INFO['AZ'] = True
@@ -70,15 +70,15 @@ def run_annotate(proband_vcf, bed, quality_threshold, flag_upd_at_fraction, outp
 
                 output.write(str(var))
                 var = next(proband_vcf)
-            elif var.CHROM == chr and var.start < start:
+            elif var.CHROM == chrom and var.start < start:
                 # before next win (and not in win) - write and pull new var
                 output.write(str(var))
                 var = next(proband_vcf)
-            elif var.CHROM == chr and var.end > end:
+            elif var.CHROM == chrom and var.end > end:
                 # var is after last window position, same chr
                 # pull new window, but no new variant and don't write var yet
                 passed_win = True
-            elif var.CHROM != chr:
+            elif var.CHROM != chrom:
                 # we ask that chromosomes are sorted the same way in both files
                 if var.end > start:
                     # likely, we have pulled a new win on a new chr. 
@@ -86,11 +86,12 @@ def run_annotate(proband_vcf, bed, quality_threshold, flag_upd_at_fraction, outp
                     output.write(str(var))
                     var = next(proband_vcf)
                 elif var.end <= start:
-                    # if we have pulled a new var on a new chr 
+                    # if we have pulled a new var on a new chrom 
                     # say, skipping one/first chr entirely, or last win extended
                     # to chromosome end
                     # pull new window, but no new variant and don't write var yet
                     passed_win = True
+                    logger.debug("")
             else:
                 # not found, but passed the due position?!
                 # var = next(proband_vcf)

@@ -37,20 +37,20 @@ def run_annotate_var(proband_vcf, roh, quality_threshold, flag_upd_at_fraction, 
             continue
 
         col = r.rstrip().split('\t')
-        chr = str(col[0])
+        chrom = str(col[0])
         pos = int(col[1])
         az = int(col[2])
         qual = float(col[3])
         # placeholder for future development: classify into UPD,SEX,DEL,IBD
         aztype = 'ND'
 
-#        print("looking for chr %s %d" % (chr, pos))
+#        print("looking for chrom %s %d" % (chrom, pos))
         found_var = False
         new_var = True
 
         while not found_var:
-#            print("testing var chr %s %d" % (var.CHROM, var.start))
-            if var.CHROM == chr and var.end == pos:
+#            print("testing var chrom %s %d" % (var.CHROM, var.start))
+            if var.CHROM == chrom and var.end == pos:
                 found_var = True
                 if az == 1:
                     var.INFO['AZ'] = True
@@ -62,7 +62,7 @@ def run_annotate_var(proband_vcf, roh, quality_threshold, flag_upd_at_fraction, 
 
                 output.write(str(var))
                 new_var = True
-            elif var.CHROM == chr and var.start < pos:
+            elif var.CHROM == chrom and var.start < pos:
                 output.write(str(var))
                 new_var = True
             else:
