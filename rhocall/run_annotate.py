@@ -1,25 +1,38 @@
 import logging
 
+from rhocall import __version__ 
+
 logger = logging.getLogger(__name__)
 
 def run_annotate(proband_vcf, bed, quality_threshold, flag_upd_at_fraction, output):
     """Markup VCF file using rho-call BED file."""
 
     az_info_header={'ID' : 'AZ', 'Number' : 1, 'Type' : 'Flag', 
-                    'Source' : 'rhocall', 'Version' : '0.1',
+                    'Source' : 'rhocall', 'Version' : __version__,
                     'Description' : "Autozygous positon call"}
     proband_vcf.add_info_to_header(az_info_header);
 
     hw_info_header={'ID' : 'HW', 'Number' : 1, 'Type' : 'Flag', 
-                    'Source' : 'rhocall', 'Version' : '0.1',
+                    'Source' : 'rhocall', 'Version' : __version__,
                     'Description' : "Hardy-Weinberg equilibrium (non-autozyous) positon call"}
     proband_vcf.add_info_to_header(hw_info_header);
 
     # pyvcf2 does not seem to play with floats yet. Setting type to string for now.
     azqual_info_header={'ID' : 'AZQUAL', 'Number' : 1, 'Type' : 'String', 
-                    'Source' : 'rhocall', 'Version' : '0.1',
+                    'Source' : 'rhocall', 'Version' : __version__,
                     'Description' : 'Autozygous positon call quality'}
     proband_vcf.add_info_to_header(azqual_info_header);
+
+    # pyvcf2 does not seem to play with floats yet. Setting type to string for now.
+    azlength_info_header={'ID' : 'AZLENGTH', 'Number' : 1, 'Type' : 'String', 
+                    'Source' : 'rhocall', 'Version' : __version__,
+                    'Description' : 'Autozygous region length'}
+    proband_vcf.add_info_to_header(azlength_info_header);
+
+    aztype_info_header={'ID' : 'AZTYPE', 'Number' : 1, 'Type' : 'String', 
+                    'Source' : 'rhocall', 'Version' : __version__,
+                    'Description' : 'Autozygous region type'}
+    proband_vcf.add_info_to_header(aztype_info_header);
 
     output.write(proband_vcf.raw_header)
 
@@ -36,6 +49,9 @@ def run_annotate(proband_vcf, bed, quality_threshold, flag_upd_at_fraction, outp
         end = int(col[2])
         az = int(col[3])
         qual = float(col[4])
+        # placeholder for future development: classify into UPD,SEX,DEL,IBD
+        aztype = 'ND'
+        azlength = end - start + 1
 
 #        print("looking for chr %s %d" % (chr, pos))
         passed_win = False
@@ -47,8 +63,11 @@ def run_annotate(proband_vcf, bed, quality_threshold, flag_upd_at_fraction, outp
                     var.INFO['AZ'] = True
                 else:
                     var.INFO['HW'] = True
-                    
-                var.INFO['AZQUAL']=str(qual)                
+
+                var.INFO['AZQUAL']=str(qual)
+                var.INFO['AZLENGTH']=str(azlength)
+                var.INFO['AZTYPE']=str(aztype)
+
                 output.write(str(var))
                 var = next(proband_vcf)
             elif var.CHROM == chr and var.start < start:

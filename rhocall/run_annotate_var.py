@@ -1,4 +1,5 @@
 import logging
+from rhocall import __version__
 
 logger = logging.getLogger(__name__)
 
@@ -7,20 +8,25 @@ def run_annotate_var(proband_vcf, roh, quality_threshold, flag_upd_at_fraction, 
     inheritance patterns are accepted."""
 
     az_info_header={'ID' : 'AZ', 'Number' : 1, 'Type' : 'Flag', 
-                    'Source' : 'rhocall', 'Version' : '0.1',
+                    'Source' : 'rhocall', 'Version' : __version__,
                     'Description' : "Autozygous positon call"}
     proband_vcf.add_info_to_header(az_info_header);
 
     hw_info_header={'ID' : 'HW', 'Number' : 1, 'Type' : 'Flag', 
-                    'Source' : 'rhocall', 'Version' : '0.1',
+                    'Source' : 'rhocall', 'Version' : __version__,
                     'Description' : "Hardy-Weinberg equilibrium (non-autozyous) positon call"}
     proband_vcf.add_info_to_header(hw_info_header);
 
     # pyvcf2 does not seem to play with floats yet. Setting type to string for now.
     azqual_info_header={'ID' : 'AZQUAL', 'Number' : 1, 'Type' : 'String', 
-                    'Source' : 'rhocall', 'Version' : '0.1',
+                    'Source' : 'rhocall', 'Version' : __version__,
                     'Description' : 'Autozygous positon call quality'}
     proband_vcf.add_info_to_header(azqual_info_header);
+
+    aztype_info_header={'ID' : 'AZTYPE', 'Number' : 1, 'Type' : 'String', 
+                    'Source' : 'rhocall', 'Version' : __version__,
+                    'Description' : 'Autozygous region type'}
+    proband_vcf.add_info_to_header(aztype_info_header);
 
     output.write(proband_vcf.raw_header)
     var = next(proband_vcf)
@@ -35,6 +41,8 @@ def run_annotate_var(proband_vcf, roh, quality_threshold, flag_upd_at_fraction, 
         pos = int(col[1])
         az = int(col[2])
         qual = float(col[3])
+        # placeholder for future development: classify into UPD,SEX,DEL,IBD
+        aztype = 'ND'
 
 #        print("looking for chr %s %d" % (chr, pos))
         found_var = False
@@ -50,6 +58,8 @@ def run_annotate_var(proband_vcf, roh, quality_threshold, flag_upd_at_fraction, 
                     var.INFO['HW'] = True
                     
                 var.INFO['AZQUAL']=str(qual)
+                var.INFO['AZTYPE']=str(aztype)
+
                 output.write(str(var))
                 new_var = True
             elif var.CHROM == chr and var.start < pos:
