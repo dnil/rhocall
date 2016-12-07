@@ -37,6 +37,7 @@ def run_annotate_var(proband_vcf, roh, quality_threshold, flag_upd_at_fraction, 
 
 #        print("looking for chr %s %d" % (chr, pos))
         found_var = False
+
         while not found_var:
 #            print("testing var chr %s %d" % (var.CHROM, var.start))
             if var.CHROM == chr and var.end == pos:
@@ -50,10 +51,11 @@ def run_annotate_var(proband_vcf, roh, quality_threshold, flag_upd_at_fraction, 
                 output.write(str(var))
             elif var.CHROM == chr and var.start < pos:   
                 output.write(str(var))
-
             else:
                 # not found, but passed the due position?!
-                pass
+                # fake finding variant, and pull new tsv (but not new var)
+                found_var = True
 
-            var = next(proband_vcf)
+            if not found_var:
+                var = next(proband_vcf)
     
