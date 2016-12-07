@@ -1,5 +1,6 @@
 import click
 import logging
+import inspect
 
 from cyvcf2 import VCF
 
@@ -11,6 +12,8 @@ from .run_tally import run_tally
 from .run_aggregate import run_aggregate
 
 from .prints import (output_bed_header)
+
+from rhocall import __version__
 
 logger = logging.getLogger(__name__)
 
@@ -165,9 +168,21 @@ def annotate(vcf, roh, bed, quality_threshold, flag_upd_at_fraction,output,verbo
     proband_vcf = VCF(vcf)
     
     # add this command to VCF header
-    # add additional tag to VCF header INFO
 
-    #output_vcfheader(output)
+    ## This is for logging the command line string ##
+    frame = inspect.currentframe()
+    args, _, _, values = inspect.getargvalues(frame)
+    argument_list = [
+        i+'='+str(values[i]) for i in values if values[i] and 
+        i not in ['frame']
+    ]
+
+    logger.info("Running rhocall annotate version {0}".format(__version__))
+    logger.debug("Arguments: {0}".format(', '.join(argument_list)))
+
+    ## add additional tags to VCF header
+    proband_vcf.add_to_header('##rhocall_version={0}'.format(__version__))
+    proband_vcf.add_to_header("##rhocall_arguments={0}".format(', '.join(argument_list)))
 
     if roh and not bed:
         run_annotate_var(

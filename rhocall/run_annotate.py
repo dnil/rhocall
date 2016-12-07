@@ -21,6 +21,8 @@ def run_annotate(proband_vcf, bed, quality_threshold, flag_upd_at_fraction, outp
                     'Description' : 'Autozygous positon call quality'}
     proband_vcf.add_info_to_header(azqual_info_header);
 
+    output.write(proband_vcf.raw_header)
+
     var = next(proband_vcf)
 
     for r in bed:
@@ -73,7 +75,7 @@ def run_annotate(proband_vcf, bed, quality_threshold, flag_upd_at_fraction, outp
             else:
                 # not found, but passed the due position?!
                 # var = next(proband_vcf)
-                click.echo("Oops? Dunno what to do with this win and var sequence!")
+                logger.warning("Oops? Dunno what to do with this win and var sequence!")
 
 
 
