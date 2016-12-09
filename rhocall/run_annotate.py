@@ -36,7 +36,9 @@ def run_annotate(proband_vcf, bed, quality_threshold, flag_upd_at_fraction, outp
 
     output.write(proband_vcf.raw_header)
 
-    var = next(proband_vcf)
+    var = next(proband_vcf,False)
+
+    found_var = False
 
     for r in bed:
 
@@ -53,13 +55,11 @@ def run_annotate(proband_vcf, bed, quality_threshold, flag_upd_at_fraction, outp
         aztype = 'ND'
         azlength = end - start + 1
 
-        logger.debug("Looking at bed window {0} {1}={2}".format(chrom,start,end))
+        logger.debug("looking for bed window %s %d-%d az %d" % (chrom, start, end, az))
 
-#        print("looking for chrom %s %d" % (chrom, pos))
         passed_win = False
-        found_var = False
         
-        while not passed_win:
+        while var and not passed_win :
 #            print("testing var chrom %s %d" % (var.CHROM, var.start))
             if var.CHROM == chrom and var.end >= start and var.end <= end:
                 # variant in window - print, and go to next var
@@ -71,36 +71,46 @@ def run_annotate(proband_vcf, bed, quality_threshold, flag_upd_at_fraction, outp
                 var.INFO['AZQUAL']=str(qual)
                 var.INFO['AZLENGTH']=str(azlength)
                 var.INFO['AZTYPE']=str(aztype)
-                
-                output.write(str(var))
-                var = next(proband_vcf)
                 found_var = True
+
+                output.write(str(var))
+                var = next(proband_vcf, False)
+
             elif var.CHROM == chrom and var.start < start:
                 # before next win (and on same chr) - write and pull new var
                 output.write(str(var))
-                var = next(proband_vcf)
+                var = next(proband_vcf, False)
+
             elif var.CHROM == chrom and var.end > end:
                 # var is after last window position, same chr
                 # pull new window, but no new variant and don't write var yet
                 passed_win = True
+                # when written?
             elif var.CHROM != chrom:
                 # first time around, assume there are many variants, at least one
-                # per bed interval
+                # per bed interval.
                 
-                # then we either just exited win by drawing var from new chr
                 if found_var:
-                    # pull next win, without deciding the fate of this var yet
+                    # then we either just exited win by drawing var from new chr
+                    # so pull next win, without deciding the fate of this var yet
                     passed_win = True
                 else:
                     # or window is on new chr, and we need to draw new vars to
                     # get there
-                    var = next(proband_vcf)
                     output.write(str(var))
+                    var = next(proband_vcf, False)
+
             else:
                 # not found, but passed the due position?!
                 # var = next(proband_vcf)
                 logger.error("Oops? Unexpected window/variant set!")
 
+    # out of windows. print any remaining unflagged vars.
+    while var:
+        output.write(str(var))
+        var = next(proband_vcf, False)
 
+    if not found_var:
+        logger.warning("No variants found for at least one window."
+                       " - were correctly matched files used for annotation?")
 
-    
