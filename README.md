@@ -133,6 +133,9 @@ rhocall aggregate 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh -o
 rhocall annotate -b 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh.bed -o 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.rho.vcf 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.bcf
 ```
 
+## Test files ##
+The test directory contains test files from the [BCFtools/RoH project](https://samtools.github.io/bcftools/howtos/roh-calling.html).
+
 ## Installation ##
 The cyvcf2 install process appears to be jinxed on certain systems/setups. 
 In practice this means that a chained pip install on a naive system may fail. Installation of each requirement for cyvcf2 prior to installing it appears to work unconditionally.

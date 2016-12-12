@@ -57,8 +57,8 @@ def run_annotate(proband_vcf, bed, quality_threshold, flag_upd_at_fraction, outp
 
         logger.debug("looking for bed window %s %d-%d az %d" % (chrom, start, end, az))
 
-        passed_win = False
-        
+        passed_win = False        
+
         while var and not passed_win :
 #            print("testing var chrom %s %d" % (var.CHROM, var.start))
             if var.CHROM == chrom and var.end >= start and var.end <= end:
@@ -96,7 +96,7 @@ def run_annotate(proband_vcf, bed, quality_threshold, flag_upd_at_fraction, outp
                     passed_win = True
                 else:
                     # or window is on new chr, and we need to draw new vars to
-                    # get there
+                    # get there - essentially "before next win"
                     output.write(str(var))
                     var = next(proband_vcf, False)
 
