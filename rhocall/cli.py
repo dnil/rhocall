@@ -17,9 +17,11 @@ from rhocall import __version__
 
 logger = logging.getLogger(__name__)
 
+
 @click.group()
+@click.version_option(__version__)
 def cli():
-    pass
+        pass
 
 @click.command()
 @click.argument('vcf', type=click.Path(exists=True))
@@ -108,6 +110,8 @@ def tally(roh, quality_threshold, flag_upd_at_fraction, output, verbose):
     loglevel = LEVELS.get(min(verbose, 3))
     configure_stream(level=loglevel)
 
+    logger.info("Running rhocall tally {0}".format(__version__))
+
     run_tally(
         roh=roh,
         quality_threshold=quality_threshold,
@@ -132,6 +136,8 @@ def aggregate(roh, quality_threshold, output, verbose):
     Accepts a bcftools roh style TSV-file with CHR,POS,AZ,QUAL."""
     loglevel = LEVELS.get(min(verbose, 3))
     configure_stream(level=loglevel)
+
+    logger.info("Running rhocall aggregate {0}".format(__version__))
 
     run_aggregate(
         roh=roh,
@@ -177,7 +183,7 @@ def annotate(vcf, roh, bed, quality_threshold, flag_upd_at_fraction,output,verbo
         i not in ['frame']
     ]
 
-    logger.info("Running rhocall annotate version {0}".format(__version__))
+    logger.info("Running rhocall annotate  {0}".format(__version__))
     logger.debug("Arguments: {0}".format(', '.join(argument_list)))
 
     ## add additional tags to VCF header
@@ -203,8 +209,6 @@ def annotate(vcf, roh, bed, quality_threshold, flag_upd_at_fraction,output,verbo
     else:
         click.echo("""Cannot use both BED and ROH at once. Please apply 
                     them sequentially instead.""")
-
-
 
 cli.add_command(call)
 cli.add_command(tally)
