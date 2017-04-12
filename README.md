@@ -77,11 +77,16 @@ Options:
 Usage: rhocall annotate [OPTIONS] VCF
 
   Markup VCF file using rho-calls. Use BED file to mark all variants in AZ
-  windows. Use a bcftools style roh TSV to mark only selected AZ variants.
+  windows. Alternatively, use a bcftools v>=1.4 file with RG entries to mark
+  all vars. With the --no-v14 flag, use an older bcftools v<=1.2 style roh
+  TSV to mark only selected AZ variants. Roh is broken in bcftools v1.3  -
+  do not use.
 
 Options:
   -r FILENAME                     Bcftools roh style TSV file with
                                   CHR,POS,AZ,QUAL.
+  --v14 / --no-v14                Bcftools v1.4 or newer roh file including RG
+                                  calls.
   -b FILENAME                     BED file with AZ windows.
   -q, --quality_threshold FLOAT   Minimum quality calls that are imported in
                                   region totals.
@@ -127,10 +132,13 @@ rhocall tally sample.roh -o sample.roh.tally.tsv
 ```
 bcftools query -f'%CHROM\t%POS\t%REF,%ALT\t%INFO/AF\n' anon-SweGen_STR_NSPHS_1000samples_snp_freq_hg19.vcf.gz | bgzip -c > anon_SweGen_161019_snp_freq_hg19.tab.gz
 bcftools roh --AF-file anon_SweGen_161019_snp_freq_hg19.tab.gz -I 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.bcf > 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh
+# bcftools <=1.2
 rhocall tally 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh -o 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh.tally.tsv
-rhocall annotate -r 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.bcf -o 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh.vcf
+rhocall annotate --no-v14 -r 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.bcf -o 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh.vcf
 rhocall aggregate 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh -o 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh.bed
 rhocall annotate -b 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh.bed -o 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.rho.vcf 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.bcf
+# bcftools >=1.4
+rhocall annotate --v14 -r 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.14.roh -o 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.14.rho.vcf 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.bcf
 ```
 
 ## Test files ##

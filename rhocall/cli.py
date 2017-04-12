@@ -168,9 +168,13 @@ def aggregate(roh, quality_threshold, output, verbose):
     default=2
 )
 @click.option('--output','-o',type=click.File('w'), default='-')
-def annotate(vcf, roh, bed, v14, quality_threshold, flag_upd_at_fraction,output,verbose):
+def annotate(vcf, roh, bed, v14, quality_threshold, flag_upd_at_fraction,
+	     output, verbose):
     """Markup VCF file using rho-calls. Use BED file to mark all variants in AZ 
-    windows. Use a bcftools style roh TSV to mark only selected AZ variants."""
+    windows. Alternatively, use a bcftools v>=1.4 file with RG entries to mark 
+    all vars. With the --no-v14 flag, use an older bcftools v<=1.2 style roh TSV
+    to mark only selected AZ variants. Roh is broken in bcftools v1.3 
+    - do not use."""
     loglevel = LEVELS.get(min(verbose, 3))
     configure_stream(level=loglevel)
 
