@@ -4,7 +4,7 @@ from rhocall import __version__
 
 logger = logging.getLogger(__name__)
 
-def run_annotate(proband_vcf, bed, quality_threshold, flag_upd_at_fraction, output):
+def run_annotate_rg(proband_vcf, bcfroh, quality_threshold, flag_upd_at_fraction, output):
     """Markup VCF file using rho-call BED file."""
 
     az_info_header={'ID' : 'AZ', 'Number' : 1, 'Type' : 'Flag', 
@@ -29,6 +29,13 @@ def run_annotate(proband_vcf, bed, quality_threshold, flag_upd_at_fraction, outp
                     'Description' : 'Autozygous region length'}
     proband_vcf.add_info_to_header(azlength_info_header);
 
+    # pyvcf2 does not seem to play with floats yet. Setting type to string for now.
+    azlength_info_header={'ID' : 'AZMARKERS', 'Number' : 1, 'Type' : 'String', 
+                    'Source' : 'rhocall', 'Version' : __version__,
+                    'Description' : 'Autozygous region length'}
+    proband_vcf.add_info_to_header(azlength_info_header);
+
+
     aztype_info_header={'ID' : 'AZTYPE', 'Number' : 1, 'Type' : 'String', 
                     'Source' : 'rhocall', 'Version' : __version__,
                     'Description' : 'Autozygous region type'}
@@ -40,40 +47,46 @@ def run_annotate(proband_vcf, bed, quality_threshold, flag_upd_at_fraction, outp
 
     found_any_var = False
 
-    for r in bed:
+    for r in bcfroh:
 
         if r[0] == '#':
             continue
 
         col = r.rstrip().split('\t')
-        chrom = str(col[0])
-        start = int(col[1])
-        end = int(col[2])
-        az = int(col[3])
-        qual = float(col[4])
+        if col[0] != 'RG':
+            continue
+
+        # trust RG entries
+        if col[0] == 'RG':
+            sample = str(col[1])
+            chrom = str(col[2])
+            start = int(col[3])
+            end = int(col[4])
+            azlength = int(col[5])
+            nmarkers = int(col[6])
+            qual = float(col[7])
+
+        found_var = False
+
         # placeholder for future development: classify into UPD,SEX,DEL,IBD
         aztype = 'ND'
         azlength = end - start + 1
 
-        found_var = False
+        logger.debug("looking for roh window %s %d-%d nmarkers %d qual %f" % (chrom, start, end, nmarkers, qual ))
 
-        logger.debug("looking for bed window %s %d-%d az %d" % (chrom, start, end, az))
-
-        passed_win = False        
+        passed_win = False
 
         while var and not passed_win :
 #            print("testing var chrom %s %d" % (var.CHROM, var.start))
             if var.CHROM == chrom and var.end >= start and var.end <= end:
                 # variant in window - print, and go to next var
-                if az == 1:
-                    var.INFO['AZ'] = True
-                else:
-                    var.INFO['HW'] = True
-
+                var.INFO['AZ'] = True
                 var.INFO['AZQUAL']=str(qual)
                 var.INFO['AZLENGTH']=str(azlength)
+                var.INFO['AZMARKERS']=str(nmarkers)
                 var.INFO['AZTYPE']=str(aztype)
                 found_var = True
+                found_any_var = True
 
                 output.write(str(var))
                 var = next(proband_vcf, False)
@@ -101,6 +114,7 @@ def run_annotate(proband_vcf, bed, quality_threshold, flag_upd_at_fraction, outp
                     # get there - essentially "before next win"
                     output.write(str(var))
                     var = next(proband_vcf, False)
+                    logger.debug("Win chr %s not same as var chr %s: keep drawing new vars (end %s)." % (chrom, var.CHROM, var.end))
 
             else:
                 # not found, but passed the due position?!

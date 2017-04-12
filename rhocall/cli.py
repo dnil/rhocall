@@ -7,6 +7,7 @@ from cyvcf2 import VCF
 from rhocall.log import configure_stream, LEVELS
 from .run_rho import run_rhocall
 from .run_annotate import run_annotate
+from .run_annotate_bcfroh import run_annotate_rg
 from .run_annotate_var import run_annotate_var
 from .run_tally import run_tally
 from .run_aggregate import run_aggregate
@@ -150,6 +151,8 @@ def aggregate(roh, quality_threshold, output, verbose):
 @click.argument('vcf', type=click.Path(exists=True))
 @click.option('roh', '-r', type=click.File('r'),
               help='Bcftools roh style TSV file with CHR,POS,AZ,QUAL.')
+@click.option('--v14/--no-v14', default=True,
+	      help='Bcftools v1.4 or newer roh file including RG calls.')
 @click.option('bed', '-b', type=click.File('r'),
               help='BED file with AZ windows.')
 @click.option('--quality_threshold', '-q',
@@ -165,7 +168,7 @@ def aggregate(roh, quality_threshold, output, verbose):
     default=2
 )
 @click.option('--output','-o',type=click.File('w'), default='-')
-def annotate(vcf, roh, bed, quality_threshold, flag_upd_at_fraction,output,verbose):
+def annotate(vcf, roh, bed, v14, quality_threshold, flag_upd_at_fraction,output,verbose):
     """Markup VCF file using rho-calls. Use BED file to mark all variants in AZ 
     windows. Use a bcftools style roh TSV to mark only selected AZ variants."""
     loglevel = LEVELS.get(min(verbose, 3))
@@ -190,22 +193,30 @@ def annotate(vcf, roh, bed, quality_threshold, flag_upd_at_fraction,output,verbo
     proband_vcf.add_to_header('##rhocall_version={0}'.format(__version__))
     proband_vcf.add_to_header("##rhocall_arguments={0}".format(', '.join(argument_list)))
 
-    if roh and not bed:
-        run_annotate_var(
-            proband_vcf=proband_vcf,
-            roh=roh,        
-            quality_threshold=quality_threshold,
-            flag_upd_at_fraction=flag_upd_at_fraction,
-            output=output
-            )
+    if roh and not bed and not v14:
+         run_annotate_var(
+		proband_vcf=proband_vcf,
+		roh=roh,        
+		quality_threshold=quality_threshold,
+		flag_upd_at_fraction=flag_upd_at_fraction,
+		output=output
+		)
+    elif roh and v14 and not bed:
+        run_annotate_rg(
+		proband_vcf=proband_vcf,		
+		bcfroh=roh,        
+		quality_threshold=quality_threshold,
+		flag_upd_at_fraction=flag_upd_at_fraction,
+		output=output
+		)
     elif bed and not roh:
         run_annotate(
-            proband_vcf=proband_vcf,
-            bed=bed,        
-            quality_threshold=quality_threshold,
-            flag_upd_at_fraction=flag_upd_at_fraction,
-            output=output
-            )
+		proband_vcf=proband_vcf,
+		bed=bed,        
+		quality_threshold=quality_threshold,
+		flag_upd_at_fraction=flag_upd_at_fraction,
+		output=output
+		)
     else:
         click.echo("""Cannot use both BED and ROH at once. Please apply 
                     them sequentially instead.""")
