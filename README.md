@@ -99,6 +99,43 @@ Options:
 
 ```
 
+### rhoviz ###
+
+```
+Usage: rhoviz [OPTIONS]
+
+  Visualise the rhocall output file. Genomic regions labeled rho are visualised as red lines. Additionally, the fraction of homozygous snps are visualised as black dots.
+
+
+Options:
+  -r FILENAME                     Input RHO file produced from rhocall
+
+  --help                          Show this message and exit.
+
+  -i                              Input vcf file
+
+  -d                              output directory, the files will be named dir/chr.png,
+
+  -w                              window size(bases)
+
+  -m                              minimum number of snvs for each plotted bin
+
+  -M                              maximum number of snvs for each plotted bin
+
+  --minaf                         minimum allele frequency(this variable must be set to 0 if the allele frequency is not annotated)
+
+  --maxaf                         maximum allele frequency
+
+  --aftag AFTAG                   the allele frequency tag
+
+  -q                              do not add snvs to a bin if there quality is less than this value
+  -p                              Size of the points (pixels)
+
+  -n                              include variants, even if they are not labeled PASS
+
+
+```
+
 ## Examples ##
 
 ### Suggested workflow ###
