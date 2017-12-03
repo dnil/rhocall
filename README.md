@@ -102,10 +102,10 @@ Options:
 ### rhoviz ###
 
 ```
-Usage: rhoviz [OPTIONS]
+Usage: rhoviz [OPTIONS] -i input.vcf -r rho.tab -d output_dir
 
-  Visualise the rhocall output file. Genomic regions labeled rho are visualised as red lines. Additionally, the fraction of homozygous snps are visualised as black dots.
-
+  Visualise the rhocall output file. Genomic regions labeled RHO are visualised as red lines.
+  Additionally, the fraction of homozygous snps are visualised as black dots.
 
 Options:
   -r FILENAME                     Input RHO file produced from rhocall
@@ -116,19 +116,20 @@ Options:
 
   -d                              output directory, the files will be named dir/chr.png,
 
-  -w                              window size(bases)
+  -w                              window size(bases) (default = 10 000)
 
-  -m                              minimum number of snvs for each plotted bin
+  -m                              minimum number of snvs for each plotted bin (default =2)
 
-  -M                              maximum number of snvs for each plotted bin
+  -M                              maximum number of snvs for each plotted bin (default = 20)
 
-  --minaf                         minimum allele frequency(this variable must be set to 0 if the allele frequency is not annotated)
+  --minaf                         minimum allele frequency (default = 0.1)
+                                  (this variable must be set to 0 if the allele frequency is not annotated)
 
-  --maxaf                         maximum allele frequency
+  --maxaf                         maximum allele frequency (default = 0.9)
 
-  --aftag AFTAG                   the allele frequency tag
+  --aftag AFTAG                   the allele frequency tag (default = 1000GAF)
 
-  -q                              do not add snvs to a bin if there quality is less than this value
+  -q                              do not add snvs to a bin if there quality is less than this value (default = 60)
   -p                              Size of the points (pixels)
 
   -n                              include variants, even if they are not labeled PASS
