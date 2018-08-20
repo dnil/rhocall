@@ -62,7 +62,7 @@ def generate_bins(args):
 
 
         pos=int(math.floor(int(content[1])/float(args.window)))
-        if "1/1" in content[-1] or "0/0" in content[-1]:
+        if "1/1" in content[-1] or "0/0" in content[-1] or "1|1" in content[-1]:
                 bins[content[0]][pos][1]+=1
         elif "./." in content[-1] or "./1" in content[-1]:
             pass
