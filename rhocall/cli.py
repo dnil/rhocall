@@ -282,5 +282,3 @@ cli.add_command(tally)
 cli.add_command(aggregate)
 cli.add_command(annotate)
 cli.add_command(viz)
-
-## Argument parsing

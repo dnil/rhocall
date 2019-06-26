@@ -96,10 +96,39 @@ Options:
   -v, --verbose
   -o, --output FILENAME
   --help                          Show this message and exit.
-
 ```
+### rhocall viz ###
 
-### rhoviz ###
+```Usage: rhocall viz [OPTIONS] VCF
+
+  Plot binned zygosity and RHO-regions.
+
+Options:
+  --out_dir PATH              Output directory. The files will be named
+                              out_dir/chr.png. One picture is drawn per
+                              chromosome.  [required]
+  --wig / --no-wig            Produce wig file.
+  -p, --pointsize INTEGER     Size of the points (pixels)
+  -r, --rho FILENAME          Input RHO file produced from rhocall  [required]
+  -m, --minsnv INTEGER        Minimum number of snvs for each plotted bin
+  -M, --maxsnv INTEGER        Maximum number of snvs for each plotted bin
+  --minaf FLOAT               Minimum allele frequency. This variable must be
+                              set to 0 if the allele frequency is not
+                              annotated.
+  --maxaf FLOAT               Maximum allele frequency
+  --aftag TEXT                The allele frequency tag to use.
+  -q, --minqual INTEGER       Do not add SNVs to a bin if their quality is
+                              less than this value.
+  --mnv / --no-mnv            Include MNV
+  -w, --window INTEGER        Window size(bases)
+  -s, --rsid / --no-rsid      Skip variants not containing an rsid
+  -n, --filter / --no-filter  include variants, even if they are not labeled
+                              PASS
+  -v, --verbose
+  --help                      Show this message and exit.
+  ```
+
+### rhoviz (standalone version) ###
 
 ```
 Usage: rhoviz [OPTIONS] -i input.vcf -r rho.tab -d output_dir
@@ -147,7 +176,7 @@ bcftools query -f'%CHROM\t%POS\t%REF,%ALT\t%INFO/AF\n' popfreq.vcf.gz | bgzip -c
 ```
 
 #### Call ROH with bcftools ####
-Please see the [samtools project](https://samtools.github.io/bcftools/) for installation instructions, and 
+Please see the [samtools project](https://samtools.github.io/bcftools/) for installation instructions, and
 please refer to [Narasimhan et al, 2016](http://bioinformatics.oxfordjournals.org/content/early/2016/01/30/bioinformatics.btw044) regarding method details.
 
 ```
@@ -183,12 +212,10 @@ rhocall annotate --v14 -r 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOT
 The test directory contains test files from the [BCFtools/RoH project](https://samtools.github.io/bcftools/howtos/roh-calling.html).
 
 ## Installation ##
-The cyvcf2 install process appears to be jinxed on certain systems/setups. 
+The cyvcf2 install process appears to be jinxed on certain systems/setups.
 In practice this means that a chained pip install on a naive system may fail. Installation of each requirement for cyvcf2 prior to installing it appears to work unconditionally.
 ```
 pip install numpy; pip install Cython
 pip install -r requirements.txt
 pip install -e .
 ```
-
-
