@@ -140,18 +140,18 @@ def generate_wig(binned_zygosity,roh, window, outfile_basename):
 
     wigf = open(outfile_basename+".wig", "w")
     wigf.write('track type=wiggle_0 description="Fraction of homozygous snps"\n')
+
+    bedf = open(outfile_basename+".bed", "w")
+    bedf.write('track name=rhocall description="regions of autoztgosity"\n')
     for chromosome in binned_zygosity:
         if "GL" in chromosome:
             continue
 
+        # IGV range 0-1, mid 0 works fine.
         wigf.write("fixedStep chrom=%s start=1 step=%i\n" % (chromosome, window))
         for z in binned_zygosity[chromosome] :
             wigf.write("{}\n".format(z))
-#            if z != -1:
-#                sys.stderr.write("DEBUG: fount non -1 window: %i"%z)
 
-        # BED rho
-        #        if chromosome in rho:
-        #    roh[chromosome] = numpy.array(roh[chromosome])/1000
-        #    for r in roh[chromosome]:
-        #            wigf.write(r)
+        if chromosome in roh:
+            for r in roh[chromosome]:
+                bedf.write("{}\t{}\t{}\n".format(chromosome, r[0], r[1]))
