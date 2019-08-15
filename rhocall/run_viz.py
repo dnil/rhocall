@@ -139,7 +139,7 @@ def generate_plots(binned_zygosity,roh, window, pointsize, out_dir):
 def generate_wig(binned_zygosity,roh, window, outfile_basename):
 
     wigf = open(outfile_basename+".wig", "w")
-    wigf.write('track type=wiggle_0 description="Fraction of homozygous snps"')
+    wigf.write('track type=wiggle_0 description="Fraction of homozygous snps"\n')
     for chromosome in binned_zygosity:
         if "GL" in chromosome:
             continue
