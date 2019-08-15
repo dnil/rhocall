@@ -75,7 +75,7 @@ def generate_bins(input_vcf, window, filter, mnv, minqual, rsid, minaf, aftag,
         tmp_ratios=[]
         for window in bins[chromosome]:
             if sum(window) < minsnv:
-                tmp_ratios.append(-1)
+                tmp_ratios.append("NaN")
             else:
                 tmp_ratios.append(window[1]/float(window[1]+window[0]))
         bins[chromosome]=numpy.array(tmp_ratios)
@@ -146,7 +146,7 @@ def generate_wig(binned_zygosity,roh, window, outfile_basename):
 
         wigf.write("fixedStep chrom=%s start=1 step=%i\n" % (chromosome, window))
         for z in binned_zygosity[chromosome] :
-            wigf.write("%f\n"%z)
+            wigf.write("{}\n".format(z))
 #            if z != -1:
 #                sys.stderr.write("DEBUG: fount non -1 window: %i"%z)
 
