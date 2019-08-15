@@ -1,9 +1,10 @@
 import argparse
 import numpy
-import  os
+import os
 import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 import math
+import sys
 
 #compute the ratio of homozygous snps across the genome
 def generate_bins(input_vcf, window, filter, mnv, minqual, rsid, minaf, aftag,
@@ -11,12 +12,13 @@ def generate_bins(input_vcf, window, filter, mnv, minqual, rsid, minaf, aftag,
     bins={}
     contigs={}
     #collect the number of hetrozygous and homozygous snps for each bin
-    for line in open(input_vcf):
+    for line in input_vcf:
         if line[0] == "#":
             if "##contig=<ID=" in line:
                 contig_id=line.split("##contig=<ID=")[-1].split(",")[0]
-                contig_len=int(line.split(",length=")[-1].split(",")[0])
+                contig_len=int(line.split(",length=")[-1].split(">")[0])
                 contigs[contig_id]=contig_len
+#                sys.stderr.write("DEBUG: contig id %s len %i\n"%(contig_id, contig_len))
 
             if "#CHROM" in line:
                 for contig in contigs:
@@ -44,6 +46,7 @@ def generate_bins(input_vcf, window, filter, mnv, minqual, rsid, minaf, aftag,
 
         #rrsid filter(if enabled)
         if rsid and not content[2].startswith("rs"):
+#            sys.stderr.write("DEBUG: drop non rsID variant.")
             continue
 
         #allele frequency filter
@@ -58,7 +61,6 @@ def generate_bins(input_vcf, window, filter, mnv, minqual, rsid, minaf, aftag,
                     continue
             else:
                 continue
-
 
         pos=int(math.floor(int(content[1])/float(window)))
         if "1/1" in content[-1] or "0/0" in content[-1] or "1|1" in content[-1]:
@@ -83,17 +85,19 @@ def generate_bins(input_vcf, window, filter, mnv, minqual, rsid, minaf, aftag,
 def extract_roh(rho):
     roh={}
 
-    for line in open(rho):
+    for line in rho:
         if line[0] == "#":
             continue
         elif "CHROMOSOME_TOT" in line:
             continue
 
-        content=line.strip().split()
-        if not content[0] in roh:
-            roh[content[0]]=[]
-        roh[content[0]].append([int(content[1]),int(content[2])])
-
+        if (line[0]+line[1] == "RG"):
+            content=line.strip().split()
+            if not content[2] in roh:
+                # New chromosome
+                roh[content[2]]=[]
+            # Mark start and end
+            roh[content[2]].append([int(content[3]),int(content[4])])
     return(roh)
 
 #create the plots, one for each chromosome, and print them to the assigned directory
@@ -132,19 +136,22 @@ def generate_plots(binned_zygosity,roh, window, pointsize, out_dir):
         plt.close()
 
 #create the plots, one for each chromosome, and print them to the assigned directory
-def generate_wig(binned_zygosity,roh, window, outfile):
+def generate_wig(binned_zygosity,roh, window, outfile_basename):
 
-    wigf = open(outfile, "w")
+    wigf = open(outfile_basename+".wig", "w")
+    wigf.write('track type=wiggle_0 description="Fraction of homozygous snps"')
     for chromosome in binned_zygosity:
         if "GL" in chromosome:
             continue
 
-        posvector=numpy.array( range(0,len(binned_zygosity[chromosome])))*window/1000.0
+        wigf.write("fixedStep chrom=%s start=1, step=%i\n" % (chromosome, window))
+        for z in binned_zygosity[chromosome] :
+            wigf.write("%f\n"%z)
+#            if z != -1:
+#                sys.stderr.write("DEBUG: fount non -1 window: %i"%z)
 
-        fraction=plt.scatter(posvector, binned_zygosity[chromosome], c="black",s=pointsize, alpha=0.5,marker = 'o',label='fraction')
-        print('track type=wiggle_0 description="Fraction of homozygous snps"')
-        if chromosome in roh:
-            wigf.write("fixedStep chrom={} start=1, step={}", chromosome, window)
-            roh[chromosome]=numpy.array(roh[chromosome])/1000
-            for r in roh[chromosome]:
-                wigf.write(r)
+        # BED rho
+        #        if chromosome in rho:
+        #    roh[chromosome] = numpy.array(roh[chromosome])/1000
+        #    for r in roh[chromosome]:
+        #            wigf.write(r)

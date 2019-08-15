@@ -1,6 +1,7 @@
 import click
 import logging
 import inspect
+import os
 
 from cyvcf2 import VCF
 
@@ -11,7 +12,7 @@ from .run_annotate_bcfroh import run_annotate_rg
 from .run_annotate_var import run_annotate_var
 from .run_tally import run_tally
 from .run_aggregate import run_aggregate
-from .run_viz import generate_bins, generate_plots, extract_roh
+from .run_viz import generate_bins, generate_plots, generate_wig, extract_roh
 
 from .prints import (output_bed_header)
 
@@ -268,12 +269,13 @@ def viz(vcf, out_dir, wig, pointsize, rho, minsnv, maxsnv, minaf, maxaf, aftag,
     loglevel = LEVELS.get(min(verbose, 3))
     configure_stream(level=loglevel)
 
-    os.system( "mkdir {}".format(args.out_dir) )
-    binned_zygosity=generate_bins(input_vcf, window, filter, mnv, minqual,
+    os.system( "mkdir {}".format(out_dir) )
+    binned_zygosity=generate_bins(vcf, window, filter, mnv, minqual,
                                     rsid, minaf, aftag, maxaf, minsnv)
     roh=extract_roh(rho)
     if wig:
-        generate_wig(binned_zygosity,roh, window, outfile)
+        out_file_basename = out_dir + "/output"
+        generate_wig(binned_zygosity,roh, window, out_file_basename)
     else:
         generate_plots(binned_zygosity,roh,window, pointsize, out_dir)
 

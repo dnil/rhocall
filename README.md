@@ -14,6 +14,7 @@ Commands:
   annotate  Markup VCF file using rho-calls.
   call      Call runs of autozygosity.
   tally     Tally runs of autozygosity from rhofile.
+  viz       Plot binned zygosity and RHO-regions.
 ```
 ### rhocall call ###
 ```
