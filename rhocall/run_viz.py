@@ -144,7 +144,7 @@ def generate_wig(binned_zygosity,roh, window, outfile_basename):
         if "GL" in chromosome:
             continue
 
-        wigf.write("fixedStep chrom=%s start=1, step=%i\n" % (chromosome, window))
+        wigf.write("fixedStep chrom=%s start=1 step=%i\n" % (chromosome, window))
         for z in binned_zygosity[chromosome] :
             wigf.write("%f\n"%z)
 #            if z != -1:
