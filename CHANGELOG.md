@@ -1,5 +1,9 @@
 # ChangeLog
 
+## [0.5.1]
+- fixed viz functionality for later versions of bcftools
+- viz can now produce roh bed files
+
 ## [0.5]
 - merged viz into the main rhocall framework
 - viz can now produce wig files
