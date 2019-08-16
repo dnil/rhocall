@@ -50,12 +50,12 @@ def generate_bins(args):
         #allele frequency filter
         if args.minaf:
             if ";{}=".format(args.aftag) in content[7]:
-                try: 
+                try:
                     af=float(content[7].split(";{}=".format(args.aftag))[-1].split(";")[0])
                     if af < args.minaf or af > args.maxaf:
                         continue
                 except:
-                    print "error"
+                    print("Error parsing allele frequency.")
                     continue
             else:
                 continue
@@ -93,7 +93,7 @@ def extract_roh(args):
         content=line.strip().split()
         if not content[0] in roh:
             roh[content[0]]=[]
-        roh[content[0]].append([int(content[1]),int(content[2])])         
+        roh[content[0]].append([int(content[1]),int(content[2])])
 
     return(roh,chrom_tot)
 
@@ -102,7 +102,7 @@ def generate_plots(binned_zygosity,roh,chrom_tot,args):
     for chromosome in binned_zygosity:
         if "GL" in chromosome:
             continue
-        
+
         posvector=numpy.array( range(0,len(binned_zygosity[chromosome])))*args.window/1000.0
 
         plt.figure(1)
@@ -112,17 +112,17 @@ def generate_plots(binned_zygosity,roh,chrom_tot,args):
         median_fraction=numpy.median( binned_zygosity[chromosome][ numpy.where( binned_zygosity[chromosome] > -1  ) ])
         median, =plt.plot([0,max(posvector)],[median_fraction,median_fraction], linewidth=4, color='green',alpha=0.75,label="median fraction")
         ROH, =plt.plot([0,0],[-1,-1], linewidth=2, color='red',label="RHO")
-        
+
         plt.legend([median,fraction,ROH], ["median fraction","Fraction","RHO"])
         if chromosome in roh:
-            
+
             roh[chromosome]=numpy.array(roh[chromosome])/1000
             for r in roh[chromosome]:
                 ycoord=[1.1,1.1]
                 plt.plot([ r[0] ,r[1] ], ycoord, linewidth=4, color='red')
         #plt.ylim(ymax = 3*median_coverage, ymin = 0)
         plt.title('RHO plot on chromosome {}'.format(chromosome))
-        
+
         plt.ylim(ymin=0)
         plt.ylim(ymax=1.2)
         plt.xlabel('Positions(Kb)')

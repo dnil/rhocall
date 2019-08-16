@@ -14,6 +14,7 @@ Commands:
   annotate  Markup VCF file using rho-calls.
   call      Call runs of autozygosity.
   tally     Tally runs of autozygosity from rhofile.
+  viz       Plot binned zygosity and RHO-regions.
 ```
 ### rhocall call ###
 ```
@@ -96,10 +97,39 @@ Options:
   -v, --verbose
   -o, --output FILENAME
   --help                          Show this message and exit.
-
 ```
+### rhocall viz ###
 
-### rhoviz ###
+```Usage: rhocall viz [OPTIONS] VCF
+
+  Plot binned zygosity and RHO-regions.
+
+Options:
+  --out_dir PATH              Output directory. The files will be named
+                              out_dir/chr.png. One picture is drawn per
+                              chromosome.  [required]
+  --wig / --no-wig            Produce wig file.
+  -p, --pointsize INTEGER     Size of the points (pixels)
+  -r, --rho FILENAME          Input RHO file produced from rhocall  [required]
+  -m, --minsnv INTEGER        Minimum number of snvs for each plotted bin
+  -M, --maxsnv INTEGER        Maximum number of snvs for each plotted bin
+  --minaf FLOAT               Minimum allele frequency. This variable must be
+                              set to 0 if the allele frequency is not
+                              annotated.
+  --maxaf FLOAT               Maximum allele frequency
+  --aftag TEXT                The allele frequency tag to use.
+  -q, --minqual INTEGER       Do not add SNVs to a bin if their quality is
+                              less than this value.
+  --mnv / --no-mnv            Include MNV
+  -w, --window INTEGER        Window size(bases)
+  -s, --rsid / --no-rsid      Skip variants not containing an rsid
+  -n, --filter / --no-filter  include variants, even if they are not labeled
+                              PASS
+  -v, --verbose
+  --help                      Show this message and exit.
+  ```
+
+### rhoviz (standalone version) ###
 
 ```
 Usage: rhoviz [OPTIONS] -i input.vcf -r rho.tab -d output_dir
@@ -147,14 +177,19 @@ bcftools query -f'%CHROM\t%POS\t%REF,%ALT\t%INFO/AF\n' popfreq.vcf.gz | bgzip -c
 ```
 
 #### Call ROH with bcftools ####
-Please see the [samtools project](https://samtools.github.io/bcftools/) for installation instructions, and 
+Please see the [samtools project](https://samtools.github.io/bcftools/) for installation instructions, and
 please refer to [Narasimhan et al, 2016](http://bioinformatics.oxfordjournals.org/content/early/2016/01/30/bioinformatics.btw044) regarding method details.
 
 ```
 bcftools roh --AF-file popfreq.tab.gz -I sample.bcf > sample.roh
 ```
 
-#### Aggregate ROH calls into windows, and mark up variant file (VCF/BCF) ####
+#### Annotate variant file (VCF/BCF) with ROH calls ####
+```
+rhocall annotate --v14 -r sample.roh -o sample.14.rho.vcf sample.bcf
+```
+
+#### Legacy mode for bcftools<1.4: Aggregate ROH calls into windows and annotate
 ```
 rhocall aggregate sample.roh -o sample.roh.bed
 rhocall annotate -b sample.roh.bed -o sample.rho.vcf sample.bcf
@@ -165,30 +200,39 @@ rhocall annotate -b sample.roh.bed -o sample.rho.vcf sample.bcf
 rhocall tally sample.roh -o sample.roh.tally.tsv
 ```
 
+#### Export calls and zygosity data to wig and bed files ####
+```
+rhocall viz --rho sample.roh --wig --out_dir rhocall sample.vcf
+```
+
 ### Additional usage examples ###
 
 ```
 bcftools query -f'%CHROM\t%POS\t%REF,%ALT\t%INFO/AF\n' anon-SweGen_STR_NSPHS_1000samples_snp_freq_hg19.vcf.gz | bgzip -c > anon_SweGen_161019_snp_freq_hg19.tab.gz
 bcftools roh --AF-file anon_SweGen_161019_snp_freq_hg19.tab.gz -I 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.bcf > 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh
+
 # bcftools <=1.2
 rhocall tally 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh -o 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh.tally.tsv
 rhocall annotate --no-v14 -r 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.bcf -o 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh.vcf
 rhocall aggregate 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh -o 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh.bed
 rhocall annotate -b 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.roh.bed -o 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.rho.vcf 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.bcf
+
 # bcftools >=1.4
 rhocall annotate --v14 -r 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.14.roh -o 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.14.rho.vcf 2016-14676_sorted_md_rreal_brecal_gvcf_vrecal_comb_BOTH.bcf
+
+# visualize: (using bcftools v1.9)
+bcftools roh --AF-file /home/proj/development/rare-disease/references/grch37_anon_swegen_snp_-2016-10-19-.tab.gz -I F0010931_sorted_md_brecal_haptc_vrecal_comb_BOTH.bcf > F0010931_sorted_md_brecal_haptc_vrecal_comb_BOTH.roh
+rhocall viz --wig --out_dir rhocall --aftag GNOMADAF --rho F0010931_sorted_md_brecal_haptc_vrecal_comb_BOTH.roh F0010931_sorted_md_brecal_haptc_vrecal_comb_rhocall_vt_frqf_vep_parsed_snpeff_ranked_BOTH.vcf
 ```
 
 ## Test files ##
 The test directory contains test files from the [BCFtools/RoH project](https://samtools.github.io/bcftools/howtos/roh-calling.html).
 
 ## Installation ##
-The cyvcf2 install process appears to be jinxed on certain systems/setups. 
+The cyvcf2 install process appears to be jinxed on certain systems/setups.
 In practice this means that a chained pip install on a naive system may fail. Installation of each requirement for cyvcf2 prior to installing it appears to work unconditionally.
 ```
 pip install numpy; pip install Cython
 pip install -r requirements.txt
 pip install -e .
 ```
-
-
