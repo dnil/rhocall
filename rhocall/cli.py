@@ -234,7 +234,7 @@ def annotate(vcf, roh, bed, v14, quality_threshold, flag_upd_at_fraction,
 
 @click.command()
 @click.argument('vcf', type=click.File('r'), required=True) # help='Input (sorted) vcf file'
-@click.option('--out_dir', type=click.Path('w'), exists=False,required=True,
+@click.option('--out_dir', type=click.Path(exists=False),required=True,
                 help='Output directory. The files will be named out_dir/chr.png. One picture is drawn per chromosome.')
 @click.option('--wig/--no-wig', default=True,
                 help='Produce wig file.')
@@ -269,10 +269,12 @@ def viz(vcf, out_dir, wig, pointsize, rho, minsnv, maxsnv, minaf, maxaf, aftag,
     loglevel = LEVELS.get(min(verbose, 3))
     configure_stream(level=loglevel)
 
-    os.system( "mkdir {}".format(out_dir) )
-    binned_zygosity=generate_bins(vcf, window, filter, mnv, minqual,
+    if not os.access(out_dir, os.F_OK):
+        os.mkdir(out_dir)
+
+    binned_zygosity = generate_bins(vcf, window, filter, mnv, minqual,
                                     rsid, minaf, aftag, maxaf, minsnv)
-    roh=extract_roh(rho)
+    roh = extract_roh(rho)
     if wig:
         out_file_basename = out_dir + "/output"
         generate_wig(binned_zygosity,roh, window, out_file_basename)
