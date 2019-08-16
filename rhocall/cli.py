@@ -234,7 +234,7 @@ def annotate(vcf, roh, bed, v14, quality_threshold, flag_upd_at_fraction,
 
 @click.command()
 @click.argument('vcf', type=click.File('r'), required=True) # help='Input (sorted) vcf file'
-@click.option('--out_dir', type=click.Path('w'), required=True,
+@click.option('--out_dir', type=click.Path('w'), exists=False,required=True,
                 help='Output directory. The files will be named out_dir/chr.png. One picture is drawn per chromosome.')
 @click.option('--wig/--no-wig', default=True,
                 help='Produce wig file.')
