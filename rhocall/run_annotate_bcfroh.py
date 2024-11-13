@@ -7,12 +7,12 @@ logger = logging.getLogger(__name__)
 def run_annotate_rg(proband_vcf, bcfroh, quality_threshold, flag_upd_at_fraction, output):
     """Markup VCF file using rho-call BED file."""
 
-    az_info_header={'ID' : 'AZ', 'Number' : 1, 'Type' : 'Flag', 
+    az_info_header={'ID' : 'AZ', 'Number' : 0, 'Type' : 'Flag',
                     'Source' : 'rhocall', 'Version' : __version__,
                     'Description' : "Autozygous positon call"}
     proband_vcf.add_info_to_header(az_info_header);
 
-    hw_info_header={'ID' : 'HW', 'Number' : 1, 'Type' : 'Flag', 
+    hw_info_header={'ID' : 'HW', 'Number' : 0, 'Type' : 'Flag',
                     'Source' : 'rhocall', 'Version' : __version__,
                     'Description' : "Hardy-Weinberg equilibrium (non-autozyous) positon call"}
     proband_vcf.add_info_to_header(hw_info_header);

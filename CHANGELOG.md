@@ -1,5 +1,8 @@
 # ChangeLog
 
+## unreleased
+- HW and AZ are flags, set Number appropriately in VCF
+
 ## [0.5.1]
 - fixed viz functionality for later versions of bcftools
 - viz can now produce roh bed files
