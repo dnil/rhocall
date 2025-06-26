@@ -1,0 +1,44 @@
+[build-system]
+requires = ["hatchling>=1.15,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "rhocall"
+version = "0.5.2"
+description = "Call regions of homozygosity and make tentative UPD calls"
+readme = "README.md"
+license = { text = "GPL-3.0-or-later" }
+authors = [
+  { name = "Daniel Nilsson", email = "daniel.nilsson@scilifelab.com" }
+]
+keywords = ["VCF", "variants", "RHO", "autozygosity", "homozygosity", "UPD"]
+dependencies = [
+  "click",
+  "cyvcf2",
+  "numpy",
+  "matplotlib",     # for visualization
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest",
+  "flake8",
+  "black",
+]
+
+[project.scripts]
+rhocall = "rhocall.cli:cli"  # points to click.Command object
+
+[project.urls]
+Repository = "https://github.com/dnil/rhocall"
+Changelog = "https://github.com/dnil/rhocall/blob/main/CHANGELOG.md"
+"Bug Tracker" = "https://github.com/dnil/rhocall/issues"
+Issues = "https://github.com/dnil/rhocall/issues"
+
+[tool.hatch.build.targets.sdist]
+include = ["rhocall", "README.md", "LICENSE", "*.md"]
+
+[tool.black]
+line-length = 100
+
+[tool.hatch.build.targets.wheel]

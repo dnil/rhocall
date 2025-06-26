@@ -2,6 +2,7 @@ class Win:
     """A general sequence window with one linear sum property.
     Outputs bed style, with a running average over the window.
     In this case, represents a run of autozygosity, with an average quality."""
+
     chr = ""
     start = 0
     end = 0
@@ -28,7 +29,7 @@ class Win:
 
     def dump_bed_header(self, output):
         output.write("#chr\tstart\tend\tAZ\tqual\n")
-    
+
     def dump(self, output):
         if self.print_me:
             avg = float(self.sum / self.count)

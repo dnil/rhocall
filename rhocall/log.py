@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import logging
 
-LEVELS = {0: 'ERROR', 1: 'WARNING', 2: 'INFO', 3: 'DEBUG'}
+LEVELS = {0: "ERROR", 1: "WARNING", 2: "INFO", 3: "DEBUG"}
 
 
-def configure_stream(level='WARNING'):
+def configure_stream(level="WARNING"):
     """Configure root logger using a standard stream handler.
 
     Args:

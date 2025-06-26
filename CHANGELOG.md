@@ -1,7 +1,8 @@
 # ChangeLog
 
-## unreleased
+## [0.5.2]
 - HW and AZ are flags, set Number appropriately in VCF
+- Use a pyproject.toml, hatchling build
 
 ## [0.5.1]
 - fixed viz functionality for later versions of bcftools
