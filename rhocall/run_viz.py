@@ -74,7 +74,7 @@ def generate_bins(input_vcf, window, filter, mnv, minqual, rsid, minaf, aftag, m
     for chromosome in bins:
         chrom_bins = bins[chromosome]
         nr_snps = chrom_bins[:,0] + chrom_bins[:,1]
-        bins[chromosome] = numpy.where(nr_snps < minsnv, "NaN", chrom_bins[:,1] / float(nr_snps))
+        bins[chromosome] = numpy.where(nr_snps < minsnv, "NaN", chrom_bins[:,1] / nr_snps)
     return bins
 
 
