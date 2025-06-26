@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "rhocall"
-version = "0.5.1"
+version = "0.5.2"
 description = "Call regions of homozygosity and make tentative UPD calls"
 readme = "README.md"
 license = { text = "GPL-3.0-or-later" }
