@@ -73,11 +73,9 @@ def generate_bins(input_vcf, window, filter, mnv, minqual, rsid, minaf, aftag, m
     # compute ratios
     for chromosome in bins:
         tmp_ratios = []
-        for window in bins[chromosome]:
-            if sum(window) < minsnv:
-                tmp_ratios.append("NaN")
-            else:
-                tmp_ratios.append(window[1] / float(window[1] + window[0]))
+        for chrom_bins in bins[chromosome]:
+            nr_snps = chrom_bins[:,0] + chrom_bins[:,1]
+            tmp_ratios = numpy.where(nr_snps < minsnv, "NaN", chrom_array[:,1] / float(nr_snps))
         bins[chromosome] = numpy.array(tmp_ratios)
     return bins
 
@@ -162,7 +160,7 @@ def generate_wig(binned_zygosity, roh, window, outfile_basename):
     wigf.write('track type=wiggle_0 description="Fraction of homozygous snps"\n')
 
     bedf = open(outfile_basename + ".bed", "w")
-    bedf.write('track name=rhocall description="regions of autoztgosity"\n')
+    bedf.write('track name=rhocall description="Regions of autozygosity"\n')
     for chromosome in binned_zygosity:
         if "GL" in chromosome:
             continue
