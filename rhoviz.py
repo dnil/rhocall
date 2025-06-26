@@ -78,7 +78,7 @@ def generate_bins(args):
             if sum(window) < args.minsnv:
                 tmp_ratios.append(-1)
             else:
-                tmp_ratios.append(window[:,1] / float(window[:,1] + window[:,0]))
+                tmp_ratios.append(window[1] / float(window[1] + window[0]))
         bins[chromosome] = numpy.array(tmp_ratios)
     return bins
 
