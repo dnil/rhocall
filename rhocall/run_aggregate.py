@@ -4,6 +4,7 @@ logger = logging.getLogger(__name__)
 
 from .win import Win
 
+
 def run_aggregate(roh, quality_threshold, output):
     """Aggregate bcftools TSV style per variant roh calls into windowed BED file.
     Trust calls at or above given quality threshold."""
@@ -14,11 +15,11 @@ def run_aggregate(roh, quality_threshold, output):
     in_win = False
 
     for r in roh:
-        
-        if r[0] == '#':
+
+        if r[0] == "#":
             continue
 
-        col = r.rstrip().split('\t')
+        col = r.rstrip().split("\t")
         chr = str(col[0])
         pos = int(col[1])
         az = int(col[2])
@@ -53,7 +54,6 @@ def run_aggregate(roh, quality_threshold, output):
             in_win = True
             win.reset(chr=chr, start=pos, end=pos, sum=qual, count=1, print_me=True)
         # if not in win and not az - do nothing..
-
 
     # just in case the last part of the last chr is in an az block
     if in_win:
