@@ -30,7 +30,7 @@ def generate_bins(input_vcf, window, filter, mnv, minqual, rsid, minaf, aftag, m
         content = line.strip().split()
         # skip mnv calls
         if not mnv:
-            if not len(content[3]) == 1 and not len(content[4]) == 1:
+            if len(content[3]) != 1 or len(content[4]) != 1:
                 continue
 
         # filter low quality variants
