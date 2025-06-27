@@ -1,5 +1,9 @@
 # ChangeLog
 
+## [unreleased]
+- Fixed rhocall viz MNV use flag
+- Refactor rhocall viz ratio calculation
+
 ## [0.5.2]
 - HW and AZ are flags, set Number appropriately in VCF
 - Use a pyproject.toml, hatchling build
