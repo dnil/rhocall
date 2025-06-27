@@ -167,6 +167,9 @@ def aggregate(roh, quality_threshold, output, verbose):
 @click.option(
     "--v14/--no-v14", default=True, help="Bcftools v1.4 or newer roh file including RG calls."
 )
+@click.option(
+    "--select-sample", default=None, help="Select sample to use for bcftools v1.4 or newer roh file including RG calls and multiple indidviduals."
+)
 @click.option("bed", "-b", type=click.File("r"), help="BED file with AZ windows.")
 @click.option(
     "--quality_threshold",
@@ -182,7 +185,7 @@ def aggregate(roh, quality_threshold, output, verbose):
 )
 @click.option("-v", "--verbose", count=True, default=2)
 @click.option("--output", "-o", type=click.File("w"), default="-")
-def annotate(vcf, roh, bed, v14, quality_threshold, flag_upd_at_fraction, output, verbose):
+def annotate(vcf, roh, bed, v14, quality_threshold, flag_upd_at_fraction, output, verbose, select_sample):
     """Markup VCF file using rho-calls. Use BED file to mark all variants in AZ
     windows. Alternatively, use a bcftools v>=1.4 file with RG entries to mark
     all vars. With the --no-v14 flag, use an older bcftools v<=1.2 style roh TSV
@@ -222,6 +225,7 @@ def annotate(vcf, roh, bed, v14, quality_threshold, flag_upd_at_fraction, output
             quality_threshold=quality_threshold,
             flag_upd_at_fraction=flag_upd_at_fraction,
             output=output,
+            select_sample=select_sample,
         )
     elif bed and not roh:
         run_annotate(
