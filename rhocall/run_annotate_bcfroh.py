@@ -5,7 +5,7 @@ from rhocall import __version__
 logger = logging.getLogger(__name__)
 
 
-def run_annotate_rg(proband_vcf, bcfroh, quality_threshold, flag_upd_at_fraction, output, select_sample=None):
+def run_annotate_rg(proband_vcf, bcfroh, quality_threshold, flag_upd_at_fraction, output, select_sample):
     """Markup VCF file using rho-call BED file.
 
     If a select_sample is given, only ROH entries for that sample is processed. Otherwise the entries for the
@@ -155,11 +155,11 @@ def run_annotate_rg(proband_vcf, bcfroh, quality_threshold, flag_upd_at_fraction
                     # or window is on new chr, and we need to draw new vars to
                     # get there - essentially "before next win"
                     output.write(str(var))
-                    var = next(proband_vcf, False)
                     logger.debug(
                         "Win chr %s not same as var chr %s: keep drawing new vars (end %s)."
                         % (chrom, var.CHROM, var.end)
                     )
+                    var = next(proband_vcf, False)
 
             else:
                 # not found, but passed the due position?!
