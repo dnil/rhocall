@@ -30,7 +30,7 @@ def generate_bins(input_vcf, window, filter, mnv, minqual, rsid, minaf, aftag, m
         content = line.strip().split()
         # skip mnv calls
         if not mnv:
-            if not len(content[3]) == 1 and not len(content[4]) == 1:
+            if len(content[3]) != 1 or len(content[4]) != 1:
                 continue
 
         # filter low quality variants
@@ -72,13 +72,9 @@ def generate_bins(input_vcf, window, filter, mnv, minqual, rsid, minaf, aftag, m
 
     # compute ratios
     for chromosome in bins:
-        tmp_ratios = []
-        for window in bins[chromosome]:
-            if sum(window) < minsnv:
-                tmp_ratios.append("NaN")
-            else:
-                tmp_ratios.append(window[1] / float(window[1] + window[0]))
-        bins[chromosome] = numpy.array(tmp_ratios)
+        chrom_bins = bins[chromosome]
+        nr_snps = chrom_bins[:,0] + chrom_bins[:,1]
+        bins[chromosome] = numpy.where(nr_snps < minsnv, "NaN", chrom_bins[:,1] / nr_snps)
     return bins
 
 
@@ -162,7 +158,7 @@ def generate_wig(binned_zygosity, roh, window, outfile_basename):
     wigf.write('track type=wiggle_0 description="Fraction of homozygous snps"\n')
 
     bedf = open(outfile_basename + ".bed", "w")
-    bedf.write('track name=rhocall description="regions of autoztgosity"\n')
+    bedf.write('track name=rhocall description="Regions of autozygosity"\n')
     for chromosome in binned_zygosity:
         if "GL" in chromosome:
             continue
