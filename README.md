@@ -88,6 +88,9 @@ Options:
                                   CHR,POS,AZ,QUAL.
   --v14 / --no-v14                Bcftools v1.4 or newer roh file including RG
                                   calls.
+  --select-sample TEXT            Select sample to use for bcftools v1.4 or
+                                  newer roh file including RG calls and
+                                  multiple indidviduals.
   -b FILENAME                     BED file with AZ windows.
   -q, --quality_threshold FLOAT   Minimum quality calls that are imported in
                                   region totals.

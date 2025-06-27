@@ -1,1 +1,7 @@
-__version__ = "0.5.1"
+# -*- coding: utf-8 -*-
+try:
+    from importlib.metadata import version
+except ImportError:  # Backport support for importlib metadata on Python 3.7
+    from importlib_metadata import version
+
+__version__ = version("rhocall")

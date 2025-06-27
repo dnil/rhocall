@@ -1,8 +1,8 @@
 # ChangeLog
 
-## [unreleased]
+## [0.6]
 ### Added
-- Add an option to rhocall annotate to select 
+- Add an option to rhocall annotate to allow selecting sample for annotation among several in ROH/VCF
 ### Changed
 - Refactor rhocall viz ratio calculation
 ### Fixed
