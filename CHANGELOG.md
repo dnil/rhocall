@@ -3,6 +3,10 @@
 ## [unreleased]
 ### Added
 - Add an option to rhocall annotate to select 
+### Changed
+- Refactor rhocall viz ratio calculation
+### Fixed
+- Fixed rhocall viz MNV use flag
 
 ## [0.5.2]
 - HW and AZ are flags, set Number appropriately in VCF
